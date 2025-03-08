@@ -1,0 +1,33 @@
+# Performance
+
+## What is Performance
+
+Performance primarily addresses the issue of how to make Lynx pages faster. Performance aims to achieve the dual objectives of efficient operation and smooth user experience.
+It encompasses two core dimensions: **User Perceived Performance** and **Application Runtime Performance**.
+
+### User Perceived Performance
+
+User Perceived Performance is a concept that measures users' subjective perception of a page being "fast" or "slow". It reflects users' perception of page loading and
+interaction response times, directly impacting user retention as it is the most direct subjective experience of application performance.
+
+When users open a page, various reasons might prevent it from loading immediately, possibly leading them to exit prematurely, thinking they cannot access the page,
+resulting in a poor user experience. However, displaying a loading animation, friendly tips, or other engaging content can capture users' attention and create an
+impression of smooth application operation, thereby reducing users' perceived content loading time.
+
+Optimizing user perceived performance is crucial for enhancing user retention. However, since it is a subjective feeling, measuring user perceived performance can
+be challenging. The [Performance API](api/lynx-api/performance-api) offers metrics to assist in evaluation; more information can be found in
+[Evaluating User Perceived Performance](./performance/evaluating-performance#evaluating-user-perceived-performance).
+
+### Application Runtime Performance
+
+Application runtime performance measures the concepts of loading and rendering speeds, serving as the technical foundation for supporting user experience. It can be
+represented by the time consumed at critical observable stages, which directly determine the speed at which page content is displayed, thereby affecting user
+perceived performance.
+
+Poor application runtime performance manifests as "slow resource loading speed" or "slow page rendering speed," causing users to wait a long time to see page content.
+Pages that load slowly or are unresponsive can lead users to abandon further browsing.
+
+Analyzing application runtime performance provides an objective basis for identifying and optimizing performance bottlenecks. By analyzing elapsed time at key stages
+such as initialization, resource preparation, and rendering processes, and through methods like modifying resource preloading, data partitioning, optimizing the
+rendering pipeline, or refining Lynx task processing logic, runtime performance can be improved. More information can be found in
+[Evaluating Application Runtime Performance](./performance/evaluating-performance#evaluating-application-runtime-performance).

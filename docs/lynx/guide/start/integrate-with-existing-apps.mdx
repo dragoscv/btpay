@@ -1,0 +1,47 @@
+import { PlatformTabs } from '@lynx';
+import * as NextSteps from '@lynx/NextSteps';
+
+import IntegratingLynxIOS from './fragments/ios/integrating-lynx-with-existing-app-ios.mdx';
+import IntegratingLynxAndroid from './fragments/android/integrating-lynx-with-existing-app-android.mdx';
+import IntegratingLynxWeb from './fragments/web/integrating-lynx-with-web.mdx';
+
+<style jsx>
+  {`
+    .rspress-doc-footer {
+      display: none;
+    }
+  `}
+</style>
+
+# Integrate with Existing Apps
+
+Currently, Lynx is not suitable for building a new application from scratch. You need to integrate Lynx (engine) with your native mobile app or web app, and load Lynx apps through Lynx views. With a few steps, you can start developing with Lynx in your application.
+
+Choose your target platform to view the specific integration steps:
+
+<PlatformTabs hashKey="platform">
+<PlatformTabs.Tab platform="ios">
+<IntegratingLynxIOS />
+</PlatformTabs.Tab>
+
+<PlatformTabs.Tab platform="android">
+  <IntegratingLynxAndroid />
+</PlatformTabs.Tab>
+
+<PlatformTabs.Tab platform="web">
+  <IntegratingLynxWeb />
+</PlatformTabs.Tab>
+
+</PlatformTabs>
+
+## Next Steps
+
+<NextSteps.Root>
+
+<NextSteps.Step
+  href="/guide/start/integrate-lynx-devtool"
+  title="Integrate Lynx DevTool"
+  description="Integrate Lynx DevTool to debug Lynx pages"
+/>
+
+</NextSteps.Root>

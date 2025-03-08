@@ -1,0 +1,79 @@
+{
+    "name": "btpay",
+    "version": "0.1.0",
+    "description": "A utility library for integrating with the BT - BG PSD2 PISP API in Lynx framework projects",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist",
+        "LICENSE",
+        "README.md"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        },
+        "./lynx": {
+            "types": "./dist/lynx/index.d.ts",
+            "import": "./dist/lynx/index.mjs",
+            "require": "./dist/lynx/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "lint": "eslint . --ext .ts,.tsx",
+        "test": "jest",
+        "prepare": "npm run build",
+        "prepublishOnly": "npm run lint && npm run test",
+        "ppublish": "npm run build && npm publish --access public"
+    },
+    "keywords": [
+        "payment",
+        "psd2",
+        "api",
+        "banking",
+        "lynx",
+        "pisp"
+    ],
+    "author": "Dragos Catalin <https://github.com/dragoscv>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dragoscv/btpay.git"
+    },
+    "bugs": {
+        "url": "https://github.com/dragoscv/btpay/issues"
+    },
+    "homepage": "https://github.com/dragoscv/btpay#readme",
+    "devDependencies": {
+        "@types/jest": "^29.5.0",
+        "@types/node": "^20.0.0",
+        "@types/react": "^18.0.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "eslint": "^8.0.0",
+        "eslint-config-prettier": "^9.0.0",
+        "eslint-plugin-prettier": "^5.0.0",
+        "jest": "^29.5.0",
+        "prettier": "^3.0.0",
+        "ts-jest": "^29.1.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "@types/uuid": "^9.0.0"
+    },
+    "peerDependencies": {
+        "react": "^18.0.0"
+    },
+    "dependencies": {
+        "axios": "^1.0.0",
+        "uuid": "^9.0.0"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    }
+}
