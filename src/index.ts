@@ -1,3 +1,3 @@
-export * from './types';
+export * from './btpay';
 export * from './errors';
-export { BTPay } from './btpay';
+export * from './types';

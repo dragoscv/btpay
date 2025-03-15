@@ -11,9 +11,6 @@ This file tracks planned features and improvements for the BTPay library.
 - [ ] Create RON payment initiation implementation
   - [ ] Support for single payments
   - [ ] Support for payment status checking
-- [ ] Add Lynx framework integration
-  - [ ] Create React hooks for payment operations
-  - [ ] Add TypeScript typings for Lynx components
 
 ## Medium Priority
 
@@ -32,7 +29,6 @@ This file tracks planned features and improvements for the BTPay library.
 - [ ] Add persistent token storage
 - [ ] Create examples and demo applications
   - [ ] Basic payment flow example
-  - [ ] Complete payment application with Lynx
 - [ ] Add CI/CD pipeline
   - [ ] Automated testing
   - [ ] Automated publishing to npm
@@ -41,5 +37,4 @@ This file tracks planned features and improvements for the BTPay library.
 
 - [ ] Complete API reference documentation
 - [ ] Add usage examples for common scenarios
-- [ ] Create integration guide for Lynx framework
 - [ ] Document error handling approaches

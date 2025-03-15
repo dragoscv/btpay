@@ -97,11 +97,6 @@ export interface PaymentStatusResponse {
     transactionStatus: TransactionStatus | string;
 }
 
-export interface BTPay {
-    apiKey: string;
-    environment: 'sandbox' | 'production';
-}
-
 export interface BTPayOptions {
     apiKey: string;
     environment: 'sandbox' | 'production';

@@ -1,7 +1,7 @@
 {
     "name": "btpay",
-    "version": "0.1.0",
-    "description": "A utility library for integrating with the BT - BG PSD2 PISP API in Lynx framework projects",
+    "version": "0.1.1",
+    "description": "A utility library for integrating with the BT - BG PSD2 PISP API in React or vanilla JavaScript projects",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
@@ -15,11 +15,6 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "require": "./dist/index.js"
-        },
-        "./lynx": {
-            "types": "./dist/lynx/index.d.ts",
-            "import": "./dist/lynx/index.mjs",
-            "require": "./dist/lynx/index.js"
         }
     },
     "scripts": {
@@ -36,8 +31,8 @@
         "psd2",
         "api",
         "banking",
-        "lynx",
-        "pisp"
+        "pisp",
+        "react"
     ],
     "author": "Dragos Catalin <https://github.com/dragoscv>",
     "license": "MIT",
@@ -65,7 +60,7 @@
         "typescript": "^5.0.0",
         "@types/uuid": "^9.0.0"
     },
-    "peerDependencies": {
+    "optionalDependencies": {
         "react": "^18.0.0"
     },
     "dependencies": {
