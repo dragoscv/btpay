@@ -7,7 +7,18 @@ import {
     PaymentStatusResponse,
     PaymentType
 } from './types';
-import { ApiError } from './errors';
+import { ApiError, AuthenticationError, PaymentInitiationError, NetworkError } from './errors';
+import { createLogger, Logger, LogLevel } from './utils/logger';
+
+/**
+ * Extended options for BTPay including authentication and logging
+ */
+export interface ExtendedBTPayOptions extends BTPayOptions {
+    tokenRefreshIntervalMs?: number;
+    autoRefreshToken?: boolean;
+    logLevel?: LogLevel;
+    logger?: Partial<Logger>;
+}
 
 /**
  * Main BTPay API client for interacting with BT-BG PSD2 PISP API
@@ -17,14 +28,30 @@ export class BTPay {
     private readonly environment: 'sandbox' | 'production';
     private readonly client: AxiosInstance;
     private accessToken: string | null = null;
+    private tokenExpiry: number | null = null;
+    private refreshTokenTimeout: NodeJS.Timeout | null = null;
+    private readonly tokenRefreshIntervalMs: number;
+    private readonly autoRefreshToken: boolean;
+    private readonly logger: Logger;
 
     /**
      * Creates a new BTPay client instance
      * @param options Configuration options for the API client
      */
-    constructor(options: BTPayOptions) {
+    constructor(options: ExtendedBTPayOptions) {
         this.apiKey = options.apiKey;
         this.environment = options.environment || 'sandbox';
+        this.tokenRefreshIntervalMs = options.tokenRefreshIntervalMs || 3540000; // Default to 59 minutes (tokens usually expire in 1 hour)
+        this.autoRefreshToken = options.autoRefreshToken !== false; // Default to true
+
+        // Initialize logger
+        this.logger = createLogger({
+            level: options.logLevel || LogLevel.INFO,
+            prefix: '[BTPay]',
+            customLogger: options.logger
+        });
+
+        this.logger.debug('Initializing BTPay client', { environment: this.environment });
 
         // Create Axios instance with base configuration
         this.client = axios.create({
@@ -36,6 +63,12 @@ export class BTPay {
 
         // Add request interceptor to handle common headers and authentication
         this.client.interceptors.request.use(async (config) => {
+            // Check if token is about to expire and refresh if needed
+            if (this.accessToken && this.tokenExpiry && Date.now() >= this.tokenExpiry) {
+                this.logger.debug('Token expired or about to expire, refreshing...');
+                await this.authenticate();
+            }
+
             // Add authentication if token is available
             if (this.accessToken) {
                 config.headers.Authorization = `Bearer ${this.accessToken}`;
@@ -49,14 +82,39 @@ export class BTPay {
             (response) => response,
             (error) => {
                 if (error.response) {
-                    throw new ApiError(
-                        `API Error: ${error.response.status}`,
-                        error.response.status,
-                        error.response.data
-                    );
+                    if (error.response.status === 401) {
+                        this.logger.warn('Authentication error', { status: error.response.status });
+                        throw new AuthenticationError(
+                            `Authentication Error: ${error.response.status}`,
+                            error.response.status,
+                            error.response.data
+                        );
+                    } else if (error.response.status >= 400 && error.response.status < 500) {
+                        this.logger.warn('API client error', {
+                            status: error.response.status,
+                            data: error.response.data
+                        });
+                        throw new ApiError(
+                            `API Error: ${error.response.status}`,
+                            error.response.status,
+                            error.response.data
+                        );
+                    } else {
+                        this.logger.error('API server error', {
+                            status: error.response.status,
+                            data: error.response.data
+                        });
+                        throw new ApiError(
+                            `API Server Error: ${error.response.status}`,
+                            error.response.status,
+                            error.response.data
+                        );
+                    }
                 } else if (error.request) {
-                    throw new ApiError('No response received', 0, error.request);
+                    this.logger.error('Network error, no response received', { request: error.request });
+                    throw new NetworkError('No response received from server');
                 } else {
+                    this.logger.error('Request setup error', { message: error.message });
                     throw new ApiError('Request error', 0, error.message);
                 }
             }
@@ -74,11 +132,42 @@ export class BTPay {
     }
 
     /**
+     * Set up automatic token refresh
+     * @param expiresIn Token expiration time in seconds
+     */
+    private setupTokenRefresh(expiresIn: number): void {
+        // Clear any existing timeout
+        if (this.refreshTokenTimeout) {
+            clearTimeout(this.refreshTokenTimeout);
+            this.refreshTokenTimeout = null;
+        }
+
+        if (!this.autoRefreshToken) {
+            return;
+        }
+
+        // Calculate when to refresh (usually 1 minute before expiration)
+        const refreshTime = Math.max(100, (expiresIn - 60) * 1000);
+        this.tokenExpiry = Date.now() + (expiresIn * 1000);
+
+        this.logger.debug(`Setting up token refresh in ${refreshTime}ms`);
+
+        // Set up the refresh timeout
+        this.refreshTokenTimeout = setTimeout(() => {
+            this.logger.info('Refreshing authentication token');
+            this.authenticate().catch(error => {
+                this.logger.error('Failed to refresh token', { error });
+            });
+        }, refreshTime);
+    }
+
+    /**
      * Authenticate with the API using OAuth2
      * @returns Promise resolving to the authentication success status
      */
     async authenticate(): Promise<boolean> {
         try {
+            this.logger.info('Authenticating with API');
             // Note: This is a simplified version - actual implementation would need to follow
             // the specific OAuth flow required by the BT API
             const response = await this.client.post('/oauth2/token', {
@@ -88,13 +177,24 @@ export class BTPay {
 
             if (response.data?.access_token) {
                 this.accessToken = response.data.access_token;
+
+                // Setup token refresh if expiry information is available
+                if (response.data.expires_in) {
+                    this.setupTokenRefresh(response.data.expires_in);
+                } else {
+                    // Default to 1 hour if no expiry provided
+                    this.setupTokenRefresh(3600);
+                }
+
+                this.logger.info('Authentication successful');
                 return true;
             }
 
+            this.logger.warn('Authentication failed: No access token in response');
             return false;
         } catch (error) {
-            console.error('Authentication failed:', error);
-            throw new ApiError('Authentication failed', 401, error);
+            this.logger.error('Authentication failed', { error });
+            throw new AuthenticationError('Authentication failed', 401, error);
         }
     }
 
@@ -109,6 +209,13 @@ export class BTPay {
         // Generate a UUID for the request if not provided
         const requestId = params.requestId || uuidv4();
 
+        this.logger.info('Creating payment', {
+            paymentService,
+            paymentProduct,
+            requestId
+        });
+        this.logger.debug('Payment details', { payment });
+
         try {
             const response = await this.client.post(
                 `/v2/${paymentService}/${paymentProduct}`,
@@ -122,12 +229,17 @@ export class BTPay {
                 } as AxiosRequestConfig
             );
 
+            this.logger.info('Payment created successfully', {
+                paymentId: response.data.paymentId,
+                status: response.data.transactionStatus
+            });
+
             return response.data as PaymentInitiationResponse;
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
             }
-            throw new ApiError('Failed to create payment', 0, error);
+            throw new PaymentInitiationError('Failed to create payment', 0, error);
         }
     }
 
@@ -230,5 +342,16 @@ export class BTPay {
             }
             throw new ApiError('Failed to confirm bulk payment', 0, error);
         }
+    }
+
+    /**
+     * Clean up resources used by the client
+     */
+    dispose(): void {
+        if (this.refreshTokenTimeout) {
+            clearTimeout(this.refreshTokenTimeout);
+            this.refreshTokenTimeout = null;
+        }
+        this.logger.debug('BTPay client resources disposed');
     }
 }

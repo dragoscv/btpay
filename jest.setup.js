@@ -3,7 +3,19 @@
 // Mock fetch globally
 global.fetch = jest.fn();
 
-// Reset mocks before each test
+// Reset all mocks before each test
 beforeEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
+});
+
+// Clean up after each test
+afterEach(() => {
+    jest.clearAllTimers();
+});
+
+// Clean up after all tests
+afterAll(() => {
+    jest.clearAllMocks();
+    jest.clearAllTimers();
 });

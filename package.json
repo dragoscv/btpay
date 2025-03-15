@@ -1,6 +1,6 @@
 {
     "name": "btpay",
-    "version": "0.2.0",
+    "version": "0.3.1",
     "description": "A utility library for integrating with the BT - BG PSD2 PISP API in React or vanilla JavaScript projects",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
@@ -21,10 +21,12 @@
         "build": "tsup",
         "dev": "tsup --watch",
         "lint": "eslint . --ext .ts,.tsx",
+        "lint:hooks": "eslint ./src/hooks --ext .ts,.tsx",
         "test": "jest",
         "prepare": "npm run build",
         "prepublishOnly": "npm run lint && npm run test",
-        "ppublish": "npm run build && npm publish --access public"
+        "ppublish": "npm run build && npm publish --access public",
+        "doc": "typedoc --out docs/api src/"
     },
     "keywords": [
         "payment",
@@ -45,6 +47,7 @@
     },
     "homepage": "https://github.com/dragoscv/btpay#readme",
     "devDependencies": {
+        "@testing-library/react": "^14.0.0",
         "@types/jest": "^29.5.0",
         "@types/node": "^20.0.0",
         "@types/react": "^18.0.0",
@@ -54,7 +57,9 @@
         "eslint-config-prettier": "^9.0.0",
         "eslint-plugin-prettier": "^5.0.0",
         "jest": "^29.5.0",
+        "jest-environment-jsdom": "^29.5.0",
         "prettier": "^3.0.0",
+        "react-dom": "^18.0.0",
         "ts-jest": "^29.1.0",
         "tsup": "^8.0.0",
         "typescript": "^5.0.0",

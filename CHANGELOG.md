@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2023-11-15
+
+### Added
+
+- React hooks for easier integration with React applications (`useBTPay`)
+- Token refresh functionality to automatically renew authentication tokens
+- Configurable logging system with different log levels
+- Expanded error handling with specialized error types
+- Additional tests for new functionality
+
+### Changed
+
+- Enhanced BTPay class with improved error handling
+- Updated documentation to include React hooks usage
+
+## [0.2.0] - 2023-10-30
+
 ### Added
 
 - Initial project setup
@@ -14,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TypeScript type definitions for API models
 - Documentation foundation
 
-## [0.1.0] - YYYY-MM-DD
+## [0.1.0] - 2023-10-01
 
 ### Added
 

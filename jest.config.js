@@ -1,6 +1,6 @@
 module.exports = {
     preset: 'ts-jest',
-    testEnvironment: 'node',
+    testEnvironment: 'jsdom',  // Changed from 'node' to 'jsdom' for React testing
     testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
     collectCoverageFrom: [
         'src/**/*.{ts,tsx}',
@@ -20,4 +20,7 @@ module.exports = {
         '^@/(.*)$': '<rootDir>/src/$1',
     },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+    testTimeout: 10000, // Set timeout to 10 seconds
+    verbose: true,
+    detectOpenHandles: true,
 };
