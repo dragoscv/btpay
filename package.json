@@ -1,6 +1,6 @@
 {
     "name": "btpay",
-    "version": "0.3.1",
+    "version": "0.2.0",
     "description": "A utility library for integrating with the BT - BG PSD2 PISP API in React or vanilla JavaScript projects",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
